@@ -6,11 +6,17 @@ public class TabelaHashSondagemQuadratica {
     private int tamanho;
     private final int c1 = 1;
     private final int c2 = 3;
+    private long colisoes = 0;
 
     public TabelaHashSondagemQuadratica(int tamanho) {
         this.tamanho = tamanho;
         this.chaves = new String[tamanho];
         this.valores = new int[tamanho];
+    }
+
+    // retornar o número de colisões
+    public long getColisoes() {
+        return colisoes;
     }
 
     // Inserir chave e valor
@@ -23,6 +29,40 @@ public class TabelaHashSondagemQuadratica {
         while (chaves[i] != null && !chaves[i].equals(chave)) {
             j++;
             i = (hash + c1 * j + c2 * j * j) % tamanho;
+        }
+
+        chaves[i] = chave;
+        valores[i] = valor;
+    }
+
+        // Inserção para testes de desempenho 
+    public void inserir(Registro registro, int tipoFuncaoHash) {
+        String chave = registro.getCodigoRegistro();
+        int valor = registro.getValor();
+
+        // Usa o método centralizado para obter o hash
+        int hash = FuncoesHash.obterHash(chave, tamanho, tipoFuncaoHash);
+        int i = hash;
+        int j = 0; // 'j' é o contador de tentativas/passos
+
+        while (chaves[i] != null && !chaves[i].equals(chave)) {
+            j++;
+
+            // Cálculo de rehashing quadrático. Usamos long no cálculo para evitar overflow.
+            long calculo = (long)hash + (long)c1 * j + (long)c2 * j * j;
+
+            int novoIndice = (int) (calculo % tamanho);
+
+            if (novoIndice < 0) {
+                novoIndice += tamanho;
+            }
+            i = novoIndice;
+
+            colisoes++; // contador incrementado a cada sondagem
+
+            if (j >= tamanho) {
+                return;
+            }
         }
 
         chaves[i] = chave;
@@ -53,6 +93,4 @@ public class TabelaHashSondagemQuadratica {
                 System.out.println(i + ": null");
         }
     }
-}
-
 }
