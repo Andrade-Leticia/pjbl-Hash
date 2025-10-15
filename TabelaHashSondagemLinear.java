@@ -1,90 +1,126 @@
 public class TabelaHashSondagemLinear {
-    // Implementação de tabela hash com rehashing (sondagem linear)
-
     private String[] chaves;
     private int[] valores;
+    private boolean[] ocupado;
     private int tamanho;
     private long colisoes = 0;
+    private int elementosInseridos = 0;
+    private int elementosNaoInseridos = 0;
 
     public TabelaHashSondagemLinear(int tamanho) {
         this.tamanho = tamanho;
         this.chaves = new String[tamanho];
         this.valores = new int[tamanho];
-        
+        this.ocupado = new boolean[tamanho];
     }
 
-    // retornar o número de colisões
+    public int getElementosNaoInseridos() {
+        return elementosNaoInseridos;
+    }
+
+    public String[] getChaves() {
+        return chaves;
+    }
+    public boolean[] getOcupado() {
+        return ocupado;
+    }
+    public int getTamanho() {
+        return tamanho;
+    }
     public long getColisoes() {
         return colisoes;
     }
-    
-    // Inserir chave e valor
-    public void inserir(String chave, int valor) {
-        int hash = FuncoesHash.hashPolinomial(chave, tamanho);
-        int i = hash;
-        int passo = 0;
-
-        // Rehashing linear: (hash + j) % tamanho
-        while (chaves[i] != null && !chaves[i].equals(chave)) {
-            i = (hash + ++passo) % tamanho;
-        }
-
-        chaves[i] = chave;
-        valores[i] = valor;
+    public int getElementosInseridos() {
+        return elementosInseridos;
     }
 
-        // inserção para testes de desempenho
+    // Inserção
     public void inserir(Registro registro, int tipoFuncaoHash) {
+        if (elementosInseridos >= tamanho) {
+            return;
+        }
+
         String chave = registro.getCodigoRegistro();
         int valor = registro.getValor();
 
-        // Usa o método centralizado para obter o hash
         int hash = FuncoesHash.obterHash(chave, tamanho, tipoFuncaoHash);
         int i = hash;
         int passo = 0;
 
-        while (chaves[i] != null && !chaves[i].equals(chave)) {
+        while (ocupado[i] && !chaves[i].equals(chave)) {
             passo++;
+            i = (hash + passo) % tamanho;
+            if (i < 0) i += tamanho;
 
-            int novoIndice = (hash + passo) % tamanho;
-
-            if (novoIndice < 0) {
-                novoIndice += tamanho;
-            }
-            i = novoIndice;
-
-            colisoes++; // Colisão: contador incrementado a cada sondagem
+            colisoes++;
 
             if (passo >= tamanho) {
                 return;
             }
         }
 
+        if (!ocupado[i]) {
+            elementosInseridos++;
+        }
         chaves[i] = chave;
         valores[i] = valor;
+        ocupado[i] = true;
     }
 
-    // Buscar valor pela chave
-    public Integer buscar(String chave) {
-        int hash = FuncoesHash.hashPolinomial(chave, tamanho);
+    // Busca
+    public Integer buscar(String chave, int tipoFuncaoHash) {
+        int hash = FuncoesHash.obterHash(chave, tamanho, tipoFuncaoHash);
         int i = hash;
         int passo = 0;
 
-        while (chaves[i] != null) {
-            if (chaves[i].equals(chave)) return valores[i];
-            i = (hash + ++passo) % tamanho;
+        while (passo < tamanho) {
+            if (!ocupado[i]) {
+                break;
+            }
+            if (chaves[i] != null && chaves[i].equals(chave)) {
+                return valores[i];
+            }
+            passo++;
+            i = (hash + passo) % tamanho;
+            if (i < 0) i += tamanho;
         }
-
         return null;
     }
 
-    // Exibir tabela
-    public void imprimirTabela() {
+    // Analisar gaps
+    public EstatisticasGaps analisarGaps() {
+        int menorGap = Integer.MAX_VALUE;
+        int maiorGap = Integer.MIN_VALUE;
+        int totalGaps = 0;
+        int countGaps = 0;
+
+        int gapAtual = 0;
+        boolean encontrouOcupado = false;
+
         for (int i = 0; i < tamanho; i++) {
-            if (chaves[i] != null)
-                System.out.println(i + ": " + chaves[i] + " -> " + valores[i]);
-            else
-                System.out.println(i + ": null");
+            if (ocupado[i]) {
+                if (encontrouOcupado && gapAtual > 0) {
+                    if (gapAtual < menorGap) menorGap = gapAtual;
+                    if (gapAtual > maiorGap) maiorGap = gapAtual;
+                    totalGaps += gapAtual;
+                    countGaps++;
+                }
+                gapAtual = 0;
+                encontrouOcupado = true;
+            } else {
+                gapAtual++;
+            }
         }
+
+        if (menorGap == Integer.MAX_VALUE) menorGap = 0;
+        if (maiorGap == Integer.MIN_VALUE) maiorGap = 0;
+
+        double mediaGap = countGaps > 0 ? (double) totalGaps / countGaps : 0;
+
+        return new EstatisticasGaps(menorGap, maiorGap, mediaGap, countGaps);
+    }
+
+    public double getFatorCarga() {
+        return (double) elementosInseridos / tamanho;
     }
 }
