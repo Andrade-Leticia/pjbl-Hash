@@ -15,10 +15,16 @@ public class TabelaHashEncadeamento {
 }
     private No[] tabela;
     private int tamanho;
+      private long colisoes = 0; //Contador de colisões para passo 4
 
     public TabelaHashEncadeamento(int tamanho) {
         this.tamanho = tamanho;
         this.tabela = new No[tamanho];
+    }
+
+      // retornar o número de colisões
+    public long getColisoes() {
+        return colisoes;
     }
 
     // Inserir par chave-valor
@@ -42,6 +48,44 @@ public class TabelaHashEncadeamento {
             atual.proximo = novo;
         }
     }
+
+        //inserção adaptado para testes de desempenho
+    public void inserir(Registro registro, int tipoFuncaoHash) {
+        String chave = registro.getCodigoRegistro();
+        int valor = registro.getValor();
+
+        // Usa o método para obter o hash
+        int hash = FuncoesHash.obterHash(chave, tamanho, tipoFuncaoHash);
+        No novo = new No(chave, valor);
+
+        if (tabela[hash] == null) {
+            tabela[hash] = novo;
+        } else {
+            colisoes++; 
+
+            No atual = tabela[hash];
+
+            // Percorre a lista
+            while (atual.proximo != null) {
+                if (atual.chave.equals(chave)) {
+                    atual.valor = valor; // Atualiza se já existir
+                    return;
+                }
+                atual = atual.proximo;
+                colisoes++; // Colisão  ao percorrer a lista
+            }
+
+            // Verifica a última chave antes de inserir
+            if (atual.chave.equals(chave)) {
+                atual.valor = valor;
+                return;
+            }
+
+            // Insere no final
+            atual.proximo = novo;
+        }
+    }
+    
     // Exibir toda a tabela
     public void imprimirTabela() {
         for (int i = 0; i < tamanho; i++) {
