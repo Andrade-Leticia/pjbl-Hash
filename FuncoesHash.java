@@ -2,7 +2,7 @@ import java.lang.Math;
 
 public class FuncoesHash {
     // Contém três funções hash diferentes implementadas manualmente
-
+  
     private static int obterChaveInt(String chave) {
         return Math.abs(chave.hashCode());
     }
@@ -26,7 +26,7 @@ public class FuncoesHash {
     // Função hash 3: polinomial (para Strings)
     public static int hashPolinomial(String chave, int tamanhoTabela) {
         int hash = 0;
-        for (int i = 0; i < chave.length(); i++) {
+        for (int i = 0; i < chave.length(); i++) {//ver se .lenght ta liberado pq em outros trabalhos ele deixou pra manipular strings
             hash = (31 * hash + chave.charAt(i));
         }
 
@@ -35,8 +35,9 @@ public class FuncoesHash {
             indice += tamanhoTabela;
         }
         return indice;
+      
 
-            // Método para obter o índice hash
+      // Método para obter o índice hash
     public static int obterHash(String chave, int tamanhoTabela, int tipoFuncaoHash) {
         switch (tipoFuncaoHash) {
             case 1:
