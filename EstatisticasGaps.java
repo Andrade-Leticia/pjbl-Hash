@@ -11,7 +11,6 @@ public class EstatisticasGaps {
         this.quantidadeGaps = quantidadeGaps;
     }
 
-    // Getters
     public int getMenorGap() { return menorGap; }
     public int getMaiorGap() { return maiorGap; }
     public double getMediaGap() { return mediaGap; }

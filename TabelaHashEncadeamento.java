@@ -32,7 +32,6 @@ public class TabelaHashEncadeamento {
         return colisoes;
     }
 
-    // Metodo para obter o tamanho de uma lista específica
     public int getTamanhoLista(int indice) {
         if (indice < 0 || indice >= tamanho) {
             return 0;
@@ -47,14 +46,12 @@ public class TabelaHashEncadeamento {
         return tamanhoLista;
     }
 
-    // Encontrar 3 maiores listas
     public int[] getTresMaioresListas() {
         int[] maiores = new int[3];
 
         for (int i = 0; i < tamanho; i++) {
             int tamanhoLista = getTamanhoLista(i);
 
-            // Atualizar os 3 maiores
             if (tamanhoLista > maiores[0]) {
                 maiores[2] = maiores[1];
                 maiores[1] = maiores[0];
@@ -69,7 +66,6 @@ public class TabelaHashEncadeamento {
         return maiores;
     }
 
-    // Calcular estatísticas das listas
     public EstatisticasLista getEstatisticasListas() {
         int totalElementos = 0;
         int listasNaoVazias = 0;
@@ -92,7 +88,6 @@ public class TabelaHashEncadeamento {
         return new EstatisticasLista(totalElementos, listasNaoVazias, maiorLista, mediaLista, fatorCarga);
     }
 
-    // Buscar valor pela chave
     public Integer buscar(String chave) {
         int hash = FuncoesHash.hashPolinomial(chave, tamanho);
         No atual = tabela[hash];
@@ -106,7 +101,6 @@ public class TabelaHashEncadeamento {
         return null;
     }
 
-    // Inserção para testes de desempenho
     public void inserir(Registro registro, int tipoFuncaoHash) {
         String chave = registro.getCodigoRegistro();
         int valor = registro.getValor();
@@ -138,7 +132,6 @@ public class TabelaHashEncadeamento {
         }
     }
 
-    // Exibir toda a tabela
     public void imprimirTabela() {
         for (int i = 0; i < tamanho; i++) {
             System.out.print(i + ": ");
