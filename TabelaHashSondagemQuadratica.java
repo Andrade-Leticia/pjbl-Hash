@@ -46,7 +46,6 @@ public class TabelaHashSondagemQuadratica {
 
     public void inserir(Registro registro, int tipoFuncaoHash) {
         if (elementosInseridos >= tamanho) {
-            // Tabela cheia
             return;
         }
 
@@ -59,7 +58,6 @@ public class TabelaHashSondagemQuadratica {
 
         while (ocupado[i] && !chaves[i].equals(chave)) {
             j++;
-            // Cálculo quadrático CORRIGIDO - usando módulo para evitar overflow
             int novoIndice = (hash + c1 * j + c2 * j * j) % tamanho;
             if (novoIndice < 0) {
                 novoIndice += tamanho;
@@ -81,7 +79,6 @@ public class TabelaHashSondagemQuadratica {
         ocupado[i] = true;
     }
 
-    // Busca corrigida - precisa saber qual função hash usar
     public Integer buscar(String chave, int tipoFuncaoHash) {
         int hash = FuncoesHash.obterHash(chave, tamanho, tipoFuncaoHash);
         int i = hash;
@@ -104,7 +101,6 @@ public class TabelaHashSondagemQuadratica {
         return null;
     }
 
-    // Analisar gaps
     public EstatisticasGaps analisarGaps() {
         int menorGap = Integer.MAX_VALUE;
         int maiorGap = Integer.MIN_VALUE;

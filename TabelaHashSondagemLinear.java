@@ -34,7 +34,6 @@ public class TabelaHashSondagemLinear {
         return elementosInseridos;
     }
 
-    // Inserção
     public void inserir(Registro registro, int tipoFuncaoHash) {
         if (elementosInseridos >= tamanho) {
             return;
@@ -67,7 +66,6 @@ public class TabelaHashSondagemLinear {
         ocupado[i] = true;
     }
 
-    // Busca
     public Integer buscar(String chave, int tipoFuncaoHash) {
         int hash = FuncoesHash.obterHash(chave, tamanho, tipoFuncaoHash);
         int i = hash;
@@ -87,7 +85,6 @@ public class TabelaHashSondagemLinear {
         return null;
     }
 
-    // Analisar gaps
     public EstatisticasGaps analisarGaps() {
         int menorGap = Integer.MAX_VALUE;
         int maiorGap = Integer.MIN_VALUE;

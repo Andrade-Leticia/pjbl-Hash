@@ -15,7 +15,6 @@ public class EstatisticasLista {
         this.fatorCarga = fatorCarga;
     }
 
-    // Getters
     public int getTotalElementos() { return totalElementos; }
     public int getListasNaoVazias() { return listasNaoVazias; }
     public int getMaiorLista() { return maiorLista; }

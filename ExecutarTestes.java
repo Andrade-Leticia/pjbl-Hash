@@ -17,13 +17,11 @@ public class ExecutarTestes {
     }
 
     public static void executarTestesCompletos() {
-        // Geração dos dados
         System.out.println("Passo 3: Gerando conjuntos de dados com SEED fixa...");
         ArrayList<Registro> dadosC1 = GeradorDados.gerarRegistros(C1);
         ArrayList<Registro> dadosC2 = GeradorDados.gerarRegistros(C2);
         ArrayList<Registro> dadosC3 = GeradorDados.gerarRegistros(C3);
 
-        // Estruturas para armazenar resultados
         ArrayList<ResultadoTestes> resultados = new ArrayList<>();
 
         int[] tamanhosTabela = {T1, T2, T3};
@@ -43,12 +41,6 @@ public class ExecutarTestes {
                 ArrayList<Registro> dados = conjuntosDados[c];
                 double fatorCargaTeorico = (double) dados.size() / tamT;
 
-//                // Testar TODAS as combinações
-//                if (fatorCargaTeorico > 1.0) {
-//                    System.out.printf("⚠️  AVISO: Tabela=%d, Conjunto=%s (fator carga = %.2f) - Sondagem pode falhar!\n",
-//                            tamT, nomesConjuntos[c], fatorCargaTeorico);
-//                }
-
                 System.out.printf("\n=== Tabela=%d | Conjunto=%s | Fator Carga Teórico: %.2f ===\n",
                         tamT, nomesConjuntos[c], fatorCargaTeorico);
 
@@ -56,17 +48,14 @@ public class ExecutarTestes {
                     String nomeFuncao = nomesFuncoes[f-1];
                     System.out.println("\n--- Função Hash: " + nomeFuncao + " ---");
 
-                    // TESTE DE ENCADENAMENTO
                     TabelaHashEncadeamento tabE = new TabelaHashEncadeamento(tamT);
                     ResultadoTestes resE = executarTesteCompleto("Encadeamento", tabE, dados, f, tamT, nomesConjuntos[c], nomeFuncao);
                     resultados.add(resE);
 
-                    // TESTE DE SONDAGEM LINEAR
                     TabelaHashSondagemLinear tabSL = new TabelaHashSondagemLinear(tamT);
                     ResultadoTestes resSL = executarTesteCompleto("Sondagem Linear", tabSL, dados, f, tamT, nomesConjuntos[c], nomeFuncao);
                     resultados.add(resSL);
 
-                    // TESTE DE SONDAGEM QUADRÁTICA
                     TabelaHashSondagemQuadratica tabSQ = new TabelaHashSondagemQuadratica(tamT);
                     ResultadoTestes resSQ = executarTesteCompleto("Sondagem Quadrática", tabSQ, dados, f, tamT, nomesConjuntos[c], nomeFuncao);
                     resultados.add(resSQ);
@@ -74,7 +63,6 @@ public class ExecutarTestes {
             }
         }
 
-        // Gerar relatório final
         gerarRelatorio(resultados);
     }
 
@@ -86,15 +74,13 @@ public class ExecutarTestes {
 
         System.out.println("  📊 Testando " + tipoTabela + "...");
 
-        // INSERÇÃO
+
         long tempoInsercao = medirInsercao(tabela, dados, tipoFuncaoHash);
         resultado.setTempoInsercao(tempoInsercao);
 
-        // BUSCA
         long tempoBusca = medirBusca(tabela, dados, tipoFuncaoHash, resultado);
         resultado.setTempoBusca(tempoBusca);
 
-        // ANÁLISES
         if (tabela instanceof TabelaHashEncadeamento) {
             TabelaHashEncadeamento tab = (TabelaHashEncadeamento) tabela;
             resultado.setColisoes(tab.getColisoes());
@@ -140,7 +126,6 @@ public class ExecutarTestes {
         return resultado;
     }
 
-    // Metodo para medir inserção
     private static long medirInsercao(Object tabela, ArrayList<Registro> dados, int tipoFuncaoHash) {
         long startTime = System.nanoTime();
 
@@ -159,7 +144,7 @@ public class ExecutarTestes {
         return (endTime - startTime) / 1000000; // ms
     }
 
-    // Metodo para medir busca de todos os elementos
+
     private static long medirBusca(Object tabela, ArrayList<Registro> dados, int tipoFuncaoHash, ResultadoTestes resultado) {
         long startTime = System.nanoTime();
 
@@ -186,29 +171,23 @@ public class ExecutarTestes {
         return (endTime - startTime) / 1000000; // ms
     }
 
-    // gerar relatório
     private static void gerarRelatorio(ArrayList<ResultadoTestes> resultados) {
         System.out.println("\n" + "=".repeat(120));
         System.out.println("📊 Análise completa de desempenho: ");
         System.out.println("=".repeat(120));
 
-        // 1. RESUMO EXECUTIVO
         System.out.println("\n1. 📈 RESUMO EXECUTIVO:");
         gerarResumoExecutivo(resultados);
 
-        // 2. COMPARAÇÃO POR TIPO DE TABELA HASH
         System.out.println("\n2. 🔄 COMPARAÇÃO POR TIPO DE TABELA HASH:");
         compararPorTipoTabela(resultados);
 
-        // 3. COMPARAÇÃO POR FUNÇÃO HASH
         System.out.println("\n3. 🎯 COMPARAÇÃO POR FUNÇÃO HASH:");
         compararPorFuncaoHash(resultados);
 
-        // 4. COMPARAÇÃO POR FATOR DE CARGA
         System.out.println("\n4. ⚖️  COMPARAÇÃO POR FATOR DE CARGA:");
         compararPorFatorCarga(resultados);
 
-        // 5. ANÁLISE DETALHADA
         System.out.println("\n5. 🔍 ANÁLISE DETALHADA POR CENÁRIO:");
         exibirAnaliseDetalhada(resultados);
 
